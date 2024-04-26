@@ -1,1 +1,117 @@
+local FastAttackScript = ([[
+(getgenv()).Config = {
+ ["FastAttack"] = true,
+ ["ClickAttack"] = true
+} 
+
+coroutine.wrap(function()
+local StopCamera = require(game.ReplicatedStorage.Util.CameraShaker)StopCamera:Stop()
+    for v,v in pairs(getreg()) do
+        if typeof(v) == "function" and getfenv(v).script == game:GetService("Players").LocalPlayer.PlayerScripts.CombatFramework then
+             for v,v in pairs(debug.getupvalues(v)) do
+                if typeof(v) == "table" then
+                    spawn(function()
+                        game:GetService("RunService").RenderStepped:Connect(function()
+                            if getgenv().Config['FastAttack'] then
+                                 pcall(function()
+                                     v.activeController.timeToNextAttack = -(math.huge^math.huge^math.huge)
+                                     v.activeController.attacking = false
+                                     v.activeController.increment = 4
+                                     v.activeController.blocking = false   
+                                     v.activeController.hitboxMagnitude = 150
+                                     v.activeController.humanoid.AutoRotate = true
+                                     v.activeController.focusStart = 0
+                                     v.activeController.currentAttackTrack = 0
+                                     sethiddenproperty(game:GetService("Players").LocalPlayer, "SimulationRaxNerous", math.huge)
+                                 end)
+                             end
+                         end)
+                    end)
+                end
+            end
+        end
+    end
+end)();
+
+spawn(function()
+    game:GetService("RunService").RenderStepped:Connect(function()
+        if getgenv().Config['ClickAttack'] then
+             pcall(function()
+                game:GetService'VirtualUser':CaptureController()
+                game:GetService'VirtualUser':Button1Down(Vector2.new(0,1,0,1))
+            end)
+        end
+    end)
+end)
+]])
+
+local fastAttackEnabled = false
+local scriptRunning = false
+
+local FastAttackGui = Instance.new("ScreenGui")
+FastAttackGui.Name = "FastAttackGui"
+FastAttackGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local Frame = Instance.new("Frame")
+Frame.Name = "Frame"
+Frame.Parent = FastAttackGui
+Frame.Size = UDim2.new(0, 150, 0, 140)
+Frame.Position = UDim2.new(0, 10, 0, 10)
+Frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+Frame.BorderSizePixel = 0
+
+local RunButton = Instance.new("TextButton")
+RunButton.Name = "RunButton"
+RunButton.Parent = Frame
+RunButton.Size = UDim2.new(0, 130, 0, 40)
+RunButton.Position = UDim2.new(0, 10, 0, 10)
+RunButton.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
+RunButton.BorderSizePixel = 0
+RunButton.Text = "Run Fast Attack Script"
+RunButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+RunButton.Font = Enum.Font.SourceSans
+RunButton.TextSize = 16
+RunButton.MouseButton1Click:Connect(function()
+    if not scriptRunning then
+        loadstring(FastAttackScript)()
+        scriptRunning = true
+        fastAttackEnabled = true
+    end
+end)
+
+local StopButton = Instance.new("TextButton")
+StopButton.Name = "StopButton"
+StopButton.Parent = Frame
+StopButton.Size = UDim2.new(0, 130, 0, 40)
+StopButton.Position = UDim2.new(0, 10, 0, 60)
+StopButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+StopButton.BorderSizePixel = 0
+StopButton.Text = "Stop Fast Attack Script"
+StopButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+StopButton.Font = Enum.Font.SourceSans
+StopButton.TextSize = 16
+StopButton.MouseButton1Click:Connect(function()
+    if fastAttackEnabled then
+        (getgenv()).Config = {
+            ["FastAttack"] = false,
+            ["ClickAttack"] = false
+        }
+        fastAttackEnabled = false
+    end
+end)
+
+local ExitButton = Instance.new("TextButton")
+ExitButton.Name = "ExitButton"
+ExitButton.Parent = Frame
+ExitButton.Size = UDim2.new(0, 30, 0, 30)
+ExitButton.Position = UDim2.new(1, -40, 0, 5)
+ExitButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+ExitButton.BorderSizePixel = 0
+ExitButton.Text = "X"
+ExitButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ExitButton.Font = Enum.Font.SourceSans
+ExitButton.TextSize = 16
+ExitButton.MouseButton1Click:Connect(function()
+    FastAttackGui:Destroy()
+end)
 
